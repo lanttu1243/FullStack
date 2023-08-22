@@ -12,7 +12,7 @@ const App = () => {
         'The only way to go fast, is to go well.'
     ]
     const [selected, setSelected] = useState(0)
-    const [votes, addVote] = useState(Array(strings.length).fill(0))
+    const [votes, addVote] = useState(strings.map(_ => 0))
     const oneAdded = (index, arr) => {
         const array = [...arr]
         for (let i = 0; i < arr.length;  i++) {
@@ -22,8 +22,6 @@ const App = () => {
         }
         return array
     }
-    console.log(votes)
-    console.log(strings[votes.indexOf(Math.max.apply(0, votes))])
 
     return (
         <div>
