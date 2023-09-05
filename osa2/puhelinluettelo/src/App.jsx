@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from "axios";
+import noteService from "./services/numbers"
 
 const Filter = (props) => {
     return (
@@ -49,7 +50,7 @@ const Persons = (props) => {
             <h2>Numbers</h2>
             {props.people.filter(person => person.name.toLowerCase().includes(props.filtr.toLowerCase())).map(person =>
                 <p key={person.name}>
-                    {person.name} {person.number}
+                    {person.name} {person.number} <button> Delete </button>
                 </p>)}
         </div>
 
@@ -59,19 +60,13 @@ const Persons = (props) => {
 const App = () => {
     const [persons, setPersons] = useState([])
     // A function used to pull the contents of db.json/persons
-    const loadJson = () => {
-        useEffect(() => {
-            console.log('effect')
-            axios
-                .get('http://localhost:3001/persons')
-                .then(response => {
-                    console.log('promise fulfilled')
-                    setPersons(response.data)
+    useEffect(() => {
+        noteService
+            .getAll()
+            .then(response => {
+                setPersons(response.data)
                 })
-        }, [])
-        console.log('render', persons.length, 'notes')
-    }
-    loadJson()
+            }, [])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [searchFilter, setSearchFilter] = useState('')
@@ -91,6 +86,12 @@ const App = () => {
         } else {
             setPersons(persons.concat(numberObject))
             console.log(persons)
+            noteService
+                .create(numberObject)
+                .then(response => {
+                    setPersons(persons.concat(response.data))
+                })
+
         }
         setNewName('')
         setNewNumber('')

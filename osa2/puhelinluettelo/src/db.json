@@ -1,5 +1,5 @@
 {
-  "persons":[
+  "persons": [
     {
       "name": "Arto Hellas",
       "number": "040-123456",
@@ -24,6 +24,31 @@
       "name": "Lasse Kukkula",
       "number": "1234567",
       "id": 5
+    },
+    {
+      "name": "Lassi Joku",
+      "number": "987654321",
+      "id": 6
+    },
+    {
+      "name": "Obi Wan Kenobi",
+      "number": "C3PO",
+      "id": 7
+    },
+    {
+      "name": "askdhashdlkq",
+      "number": "1231764",
+      "id": 8
+    },
+    {
+      "name": "Lasse",
+      "number": " GUGU",
+      "id": 9
+    },
+    {
+      "name": "Lasse GUGUL",
+      "number": "123456543234",
+      "id": 10
     }
   ]
 }
