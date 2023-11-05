@@ -1,4 +1,13 @@
 .error {
+    color: #F61030;
+    background: #3F0103;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.success {
     color: #10F630;
     background: #013F03;
     font-size: 20px;

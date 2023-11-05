@@ -1,14 +1,14 @@
 import {useEffect, useState} from 'react'
 import noteService from "./services/numbers"
 
-const Notification = ({ message }) => {
-    if (message === null) {
+const Notification = (props) => {
+    if (props.message.message === null) {
         return null
     }
 
     return (
-        <div className="error">
-            {message}
+        <div className={props.message.style}>
+            {props.message.message}
         </div>
     )
 }
@@ -72,7 +72,7 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [searchFilter, setSearchFilter] = useState('')
-    const [errorMessage, setErrorMessage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState({message: null, style: 'error'})
 
     // A function used to pull the contents of db.json/persons
     useEffect(() => {
@@ -85,15 +85,27 @@ const App = () => {
 
     const dltEntry = (object) => {
         if (window.confirm(`Are you sure you want to delete ${object.name} from Phone Book`)) {
-            noteService.deleteEntry(object.id).then(
+            noteService.deleteEntry(object.id + 1).then(
                 () => {
                     noteService
                         .getAll()
                         .then(response => {
                             setPersons(response.data)
-                            setErrorMessage(`The number for ${object.name} was successfully removed.`)
+                            const msg = {
+                                message: `The number for ${object.name} was successfully removed.`,
+                                style: 'success'
+                            }
+                            setErrorMessage(msg)
+                            setTimeout(() => {
+                                setErrorMessage({message: null, style: 'error'})
+                            }, 5000)
                         })
-                })
+                }).catch(error => {
+                setErrorMessage({message: `The person has been deleted from the database`, style: 'error'})
+                setTimeout(() => {
+                    setErrorMessage({message: null, style: 'error'})
+                }, 5000)
+            })
         }
     }
     const addNumber = (event) => {
@@ -109,29 +121,47 @@ const App = () => {
                 noteService.update(id, numberObject).then(
                     response => {
                         setPersons(persons.map(person => person.id !== id ? person : response.data));
-                        setErrorMessage(`The number for ${persons[persons.findIndex(checkDoubleName)].name} was changed successfully`);
+                        const msg = {
+                            message: `The number for ${persons[persons.findIndex(checkDoubleName)].name} was changed successfully`,
+                            style: 'success'
+                        }
+                        setErrorMessage(msg);
                         setTimeout(() => {
-                            setErrorMessage(null)
+                            setErrorMessage({message: null, style: 'error'})
                         }, 5000)
                     }).catch(error => {
                     setPersons(persons)
+                    setErrorMessage({message: `The person was not found in the database`, style: 'error'})
+                    setTimeout(() => {
+                        setErrorMessage({message: null, style: 'error'})
+                    }, 5000)
                 })
             }
         } else if (((numberObject.name === "") || (numberObject.number === ""))) {
-            setErrorMessage('Either the name or the number field is empty!');
+            const msg = {
+                message: 'Either the name or the number field is empty!',
+                style: 'error'
+            }
+            setErrorMessage(msg);
             setTimeout(() => {
-                setErrorMessage(null)
+                setErrorMessage({message: null, style: 'error'})
             }, 5000)
         } else {
             noteService
                 .create(numberObject)
                 .then(response => {
                     setPersons(persons.concat(numberObject));
-                    setErrorMessage(`Succesfully added ${numberObject.name}`);
+                    setErrorMessage({message: `Succesfully added ${numberObject.name}`, style: 'success'});
                     setTimeout(() => {
-                        setErrorMessage(null)
+                        setErrorMessage({message: null, style: 'error'})
                     }, 5000);
-                })
+                }).catch(error => {
+                    setErrorMessage({message: `Something went wrong`, style: 'error'});
+                    setTimeout(() => {
+                        setErrorMessage({message: null, style: 'error'})
+                    }, 5000);
+                }
+            )
 
         }
         setNewName('')
