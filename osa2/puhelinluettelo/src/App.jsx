@@ -1,6 +1,17 @@
 import {useEffect, useState} from 'react'
 import noteService from "./services/numbers"
 
+const Notification = ({ message }) => {
+    if (message === null) {
+        return null
+    }
+
+    return (
+        <div className="error">
+            {message}
+        </div>
+    )
+}
 const Filter = (props) => {
     return (
         <div>
@@ -61,6 +72,7 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [searchFilter, setSearchFilter] = useState('')
+    const [errorMessage, setErrorMessage] = useState(null)
 
     // A function used to pull the contents of db.json/persons
     useEffect(() => {
@@ -79,6 +91,7 @@ const App = () => {
                         .getAll()
                         .then(response => {
                             setPersons(response.data)
+                            setErrorMessage(`The number for ${object.name} was successfully removed.`)
                         })
                 })
         }
@@ -96,18 +109,28 @@ const App = () => {
                 noteService.update(id, numberObject).then(
                     response => {
                         setPersons(persons.map(person => person.id !== id ? person : response.data));
+                        setErrorMessage(`The number for ${persons[persons.findIndex(checkDoubleName)].name} was changed successfully`);
+                        setTimeout(() => {
+                            setErrorMessage(null)
+                        }, 5000)
                     }).catch(error => {
                     setPersons(persons)
                 })
             }
         } else if (((numberObject.name === "") || (numberObject.number === ""))) {
-            alert('Either the name or the number field is empty!')
+            setErrorMessage('Either the name or the number field is empty!');
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000)
         } else {
-            setPersons(persons.concat(numberObject))
             noteService
                 .create(numberObject)
                 .then(response => {
-                    setPersons(persons)
+                    setPersons(persons.concat(numberObject));
+                    setErrorMessage(`Succesfully added ${numberObject.name}`);
+                    setTimeout(() => {
+                        setErrorMessage(null)
+                    }, 5000);
                 })
 
         }
@@ -127,6 +150,7 @@ const App = () => {
 
     return (
         <div>
+            <Notification message={errorMessage} />
             <Filter handleFilterChange={handleFilterChange}
                     filtr={searchFilter}/>
             <PersonForms addNumber={addNumber}
